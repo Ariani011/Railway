@@ -1,24 +1,18 @@
 <?php
-    $host="localhost";
-    $user="root";
-    $password="";
-    $db="academia";
-    $con=mysqli_connect($host, $user, $password, $db) or die("Problemas al conectar");
-        mysqli_select_db($con,$db); 
+require "db.php";
 
-    //Trabajando con las variables
+$usuario = $_POST["usuario"];
+$clave   = $_POST["password"];
 
-    $usuarios=$_POST["usuarios"];
-    $password=$_POST["password"];
-    $sql=mysqli_query($con, "SELECT * FROM academia WHERE usuario= ´".$usuarios."' and password=´".$password."´ " );
-    $nr=mysqli_num_rows($sql);
-    //Uso de mi condicional
+$stmt = mysqli_prepare($con, "SELECT 1 FROM academia WHERE usuario = ? AND password = ?");
+mysqli_stmt_bind_param($stmt, "ss", $usuario, $clave);
+mysqli_stmt_execute($stmt);
+mysqli_stmt_store_result($stmt);
 
-     if($nr==1){
-        header("Location:pagina.html");
+if (mysqli_stmt_num_rows($stmt) == 1) {
+    header("Location: pagina.html");
+    exit;
+}
 
-     }else{
-        echo "<script>alert('Usuario incorrecto');</script>";
-        echo "<script>window.location.href=('login.html');</script>";
-     }
-?>
+echo "<script>alert('Usuario incorrecto');</script>";
+echo "<script>window.location.href='login.html';</script>";
